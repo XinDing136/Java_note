@@ -451,6 +451,107 @@ public class Test {
 ### 访问权限修饰符
 ![](/image/访问权限修饰符.png)
 
+### 构造器
+1.构造器的特征
+* 它具有与类相同的名称
+* 它不声明返回值类型。（与声明为void不同）
+* 不能被static、final、synchronized、abstract、native修饰，不能有return语句返回值
+
+2.构造器的作用：创建对象；给对象进行初始化
+3.根据参数不同，构造器可以分为如下两类：
+* 隐式无参构造器（系统默认提供）
+* 显式定义一个或多个构造器（无参、有参）
+  
+注  意：
+* Java语言中，每个类都至少有一个构造器
+* 默认构造器的修饰符与所属类的修饰符一致
+* 一旦显式定义了构造器，则系统不再提供默认构造器
+* 一个类可以创建多个重载的构造器(构造器重载使得对象的创建更加灵活，方便创建各种不同的对象)
+* 父类的构造器不可被子类继承
+
+### this
+this表示当前对象，可以调用类的属性、方法和构造器。
+```Java
+class Person{		// 定义Person类
+	private String name ;	
+	private int age ;			
+	public Person(String name,int age){	
+		this.name = name ;    //1.当形参与成员变量重名时，如果在方法内部需要使用成员变量，必须添加this来表明该变量时类成员
+		this.age = age ;  }
+	public void getInfo(){	
+		System.out.println("姓名：" + name) ;
+		this.speak();
+	}
+	public void speak(){
+		System.out.println(“年龄：” + this.age);	//2.在任意方法内，如果使用当前类的成员变量或成员方法可以在其前面添加this，增强程序的阅读性
+	}
+}
+
+
+class Person{		// 定义Person类
+	private String name ;		
+	private int age ;			
+	public Person(){	  // 无参构造
+		System.out.println("新对象实例化") ;
+	}
+	public Person(String name){
+		this();      // 调用本类中的无参构造方法
+		this.name = name ;	
+	}
+	public Person(String name,int age){	
+		this(name) ;  // 调用有一个参数的构造方法
+		this.age = age;
+	}
+	public String getInfo(){	
+		return "姓名：" + name + "，年龄：" + age ;  // 3.this可以作为一个类中，构造器相互调用的特殊格式
+
+	}  }
+
+```
+注意：
+* 使用this()必须放在构造器的首行！
+* 使用this调用本类中其他的构造器，保证至少有一个构造器是不用this的。（实际上就是不能出现构造器自己调用自己）
+
+### 多态性
+多态性，是面向对象中最重要的概念，在java中有两种体现：
+* 方法的重载(overload)（本类中的同名方法，体现相同的名称方法实现不同的逻辑）和重写(overwrite)（子类对父类的覆盖，子类可以使用和父类相同的方法名，覆盖掉父类的逻辑）。
+* 对象的多态性：Java引用变量有两个类型：编译时类型和运行时类型。编译时类型由声明该变量时使用的类型决定，运行时类型由实际赋给该变量的对象决定。若编译时类型和运行时类型不一致，就出现多态（Polymorphism）。
+```Java
+//属性是在编译时确定的，编译时e为Person类型，没有school成员变量，因而编译错误。
+Student m = new Student();
+	m.school = “pku”; 	//合法,Student类有school成员变量
+	Person e = new Student(); 
+	e.school = “pku”;	//非法,Person类没有school成员变量
+
+
+//  编译时类型和运行时类型,编译时e为Person类型，而方法的调用是在运行时确定的，所以调用的是Student类的getInfo()方法。——动态绑定
+
+  //正常的方法调用
+   	Person p = new Person();
+  	p.getInfo();
+  	Student s = new Student();
+   	s.getInfo();
+  //虚拟方法调用(多态情况下)
+  	Person e = new Student();
+    	e.getInfo();	//调用Student类的getInfo()方法
+ 
+//方法声明的形参类型为父类类型，可以使用子类的对象作为实参调用该方法
+public class Test{ 
+	public void method(Person e) {
+	           //……
+	           e.getInfo();
+	}
+	public static  void main(Stirng args[]){
+	            Test t = new Test();
+	            Student m = new Student();
+	            t.method(m); //子类的对象m传送给父类类型的参数e
+	}
+}
+```
+### instanceof 操作符
+x instanceof A：检验x是否为类A的对象，返回值为boolean型。
+要求x所属的类与类A必须是子类和父类的关系，否则编译错误。
+如果x属于类A的子类B，x instanceof  A值也为true
 ### 抽象类
 * 用abstract关键字来修饰一个类时，这个类叫做抽象类；
 * 用abstract来修饰一个方法时，该方法叫做抽象方法。
@@ -469,6 +570,182 @@ public class Test {
 * 实现接口类：
 class SubClass implements InterfaceA{ }
 * 一个类可以实现多个接口，接口也可以继承其它接口
+
+###  集合
+Java集合类存放于 java.util 包中，是一个用来存放对象的容器。
+* 集合只能存放对象。比如你存一个 int 型数据 1放入集合中，其实它是自动转换成 Integer 类后存入的，Java中每一种基本类型都有对应的引用类型。
+* 集合存放的是多个对象的引用，对象本身还是放在堆内存中。
+* 集合可以存放不同类型，不限数量的数据类型。
+Java 集合可分为 Set、List 和 Map 三种大体系
+* Set：无序、不可重复的集合
+* List：有序，可重复的集合
+* Map：具有映射关系的集合
+在 JDK5 之后，增加了泛型，Java 集合可以记住容器中对象的数据类型
+
+#### Set
+1.HashSet 是 Set 接口的典型实现，大多数时候使用 Set 集合时都使用这个实现类。我们大多数时候说的set集合指的都是HashSet
+* HashSet 按 Hash 算法来存储集合中的元素，因此具有很好的存取和查找性能。
+* HashSet 具有以下特点：
+   不能保证元素的排列顺序
+   不可重复
+   HashSet 不是线程安全的
+   集合元素可以使 null
+* 当向 HashSet 集合中存入一个元素时，HashSet 会调用该对象的 hashCode() 方法来得到该对象的 hashCode 值，**然后根据 hashCode 值决定该对象在 HashSet 中的存储位置**。
+* **如果两个元素的 equals() 方法返回 true，但它们的 hashCode() 返回值不相等，hashSet 将会把它们存储在不同的位置，但依然可以添加成功**。
+
+2.TreeSet 是 SortedSet 接口的实现类，TreeSet 可以确保集合元素处于排序状态。
+TreeSet 支持两种排序方法：自然排序和定制排序。默认情况下，TreeSet 采用自然排序
+**必须放入同样类的对象.(默认会进行排序) 否则可能会发生类型转换异常.我们可以使用泛型来进行限制**
+* 自然排序
+TreeSet 会调用集合元素的 compareTo(Object obj) 方法来比较元素之间的大小关系，然后将集合元素按升序排列
+如果 this > obj,返回正数 1
+如果 this < obj,返回负数 -1
+如果 this = obj,返回 0 ，则认为这两个对象相等
+* 如果需要实现定制排序，则需要在创建 TreeSet 集合对象时，提供一个 Comparator 接口的实现类对象。由该 Comparator 对象负责集合元素的排序逻辑
+
+####  List
+1. List 代表一个元素有序、且可重复的集合，集合中的每个元素都有其对应的顺序索引
+List 允许使用重复元素，可以通过索引来访问指定位置的集合元素。
+List 默认按元素的添加顺序设置元素的索引。
+List 集合里添加了一些根据索引来操作集合元素的方法
+2. ArrayList 和 Vector 是 List 接口的两个典型实现
+区别：
+Vector是一个古老的集合，通常建议使用 ArrayList
+ArrayList 是线程不安全的，而 Vector 是线程安全的。
+即使为保证 List 集合线程安全，也不推荐使用 Vector
+
+#### Map
+1. Map 用于保存具有映射关系的数据，因此 Map 集合里保存着两组值，一组值用于保存 Map 里的 Key，另外一组用于保存 Map 里的 Value
+Map 中的 key 和  value 都可以是任何引用类型的数据
+Map 中的 Key 不允许重复，即同一个 Map 对象的任何两个 Key 通过 equals 方法比较中返回 false
+Key 和 Value 之间存在单向一对一关系，即通过指定的 Key 总能找到唯一的，确定的 Value
+
+2. HashMap 和 Hashtable 是 Map 接口的两个典型实现类
+区别：
+Hashtable 是一个古老的 Map 实现类，不建议使用
+Hashtable 是一个线程安全的 Map 实现，但 HashMap 是线程不安全的。
+Hashtable 不允许使用 null 作为 key 和 value，而 HashMap 可以
+与 HashSet 集合不能保证元素的顺序一样，Hashtable 、HashMap 也不能保证其中 key-value 对的顺序
+Hashtable 、HashMap 判断两个 Key 相等的标准是：两个 Key 通过 equals 方法返回 true，hashCode 值也相等。
+Hashtable相等的标准是：两个 Value 通过 equalHashMap 判断两个 Values 方法返回 true
+
+3.TreeMap
+
+### 泛型
+泛型，JDK1.5新加入的，解决数据类型的安全性问题，其主要原理是在类声明时通过一个标识表示类中某个属性的类型或者是某个方法的返回值及参数类型。这样在类声明或实例化时只要指定好需要的具体的类型即可。Java中的泛型，只在编译阶段有效，泛型信息不会进入到运行阶段。
+#### 泛型类
+```Java
+class A<T>{
+	private T key;
+	
+	public void serKey(T key){
+		this.key = key;
+	}
+	
+	public T getKey(){
+		return this.key;
+	}
+}
+
+public class Test {
+	public static void main(String[] args) {
+		A<String> a1 = new A<String>();//在new A的对象指定泛型的类型String
+		a1.serKey("xxxx");//对象使用serKey(T key)方法，中的key形参就是String
+		String s = a1.getKey();//T getKey()，返回值就有new对象确定返回值是String
+		
+		A<Integer> a2 = new A<Integer>();
+		a2.serKey(1);
+		Integer i = a2.getKey();
+		
+		A a3 = new A();//不指定泛型，相当于指定了一个Object类型
+//		A<Object> a3 = new A<Object>();
+		a3.serKey(new Object());
+		Object obj = a3.getKey();
+		
+		//同样的类，但是在new对象时泛型指定不同的数据类型，这些对象不能互相赋值
+//		a1 = a2;
+	}
+}
+```
+#### 泛型接口
+#### 泛型方法
+#### 通配符
+1.不确定集合中的元素具体的数据类型使用?表示所有类型
+2.有限制的通配符
+```Java
+<? extends Person>     (无穷小 , Person]
+ 只允许泛型为Person及Person子类的引用调用
+
+
+ <? super Person >      [Person , 无穷大)
+ 只允许泛型为Person及Person父类的引用调用
+
+<? extends Comparable>
+只允许泛型为实 现Comparable接口的实现类的引用调用
+```
+### 枚举
+* 枚举类和普通类的区别：
+使用 enum 定义的枚举类默认继承了 java.lang.Enum 类
+枚举类的构造器只能使用 private 访问控制符
+枚举类的所有实例必须在枚举类中显式列出(, 分隔    ; 结尾). 列出的实例系统会自动添加 public static final 修饰
+所有的枚举类都提供了一个 values 方法, 该方法可以很方便地遍历所有的枚举值
+* JDK 1.5 中可以在 switch 表达式中使用枚举类的对象作为表达式, case 子句可以直接使用枚举值的名字, 无需添加枚举类作为限定
+* 若枚举只有一个成员, 则可以作为一种单子模式的实现方式
+* 枚举类对象的属性不应允许被改动, 所以应该使用 private final 修饰
+* 枚举类使用 private final 修饰的属性应该在构造器中为其赋值
+* 若枚举类显式的定义了带参数的构造器, 则在列出枚举值时也必须对应的传入参数
+```Java
+public class Test3 {
+	public static void main(String[] args) {
+		//Season.SPRING,这段执行就是获取一个Season的对象
+		Season spring = Season.SPRING;
+		spring.showInfo();
+		
+		Season summer = Season.SUMMER;
+		summer.showInfo();
+		
+		Season spring1 = Season.SPRING;
+		//每次执行Season.SPRING获得是相同的对象，枚举类中的每个枚举都是单例模式的
+		System.out.println(spring.equals(spring1));
+		spring1.test();
+		
+	}
+}
+
+enum Season implements ITest{
+	SPRING("春天","春暖花开"),//此处相当于在调用有参的私有构造private Season(String name,String desc)
+	SUMMER("夏天","炎炎夏日"),
+	AUTUMN("秋天","秋高气爽"),
+	WINTER("冬天","寒风凛冽");
+	
+	private final String name;
+	private final String desc;
+	
+	private Season(String name,String desc){
+		this.name = name;
+		this.desc = desc;
+	}
+	
+	public void showInfo(){
+		System.out.println(this.name + ": " + this.desc);
+	}
+
+	@Override
+	public void test() {
+		System.out.println("这是实现的ITest接口的test方法");
+	}
+	
+}
+```
+### 注解
+从 JDK 5.0 开始, Java 增加了对元数据(MetaData) 的支持, 也就是 Annotation(注释)
+Annotation 其实就是代码里的特殊标记, 这些标记可以在编译, 类加载, 运行时被读取, 并执行相应的处理. 通过使用 Annotation, 程序员可以在不改变原有逻辑的情况下, 在源文件中嵌入一些补充信息
+* 使用 Annotation 时要在其前面增加 @ 符号, 并把该 Annotation 当成一个修饰符使用. 用于修饰它支持的程序元素
+* 三个基本的 Annotation:
+@Override: 限定重写父类方法, 该注释只能用于方法
+@Deprecated: 用于表示某个程序元素(类, 方法等)已过时
+@SuppressWarnings: 抑制编译器警告. 
+定义新的 Annotation 类型使用 @interface 关键字
 
 ISO的七层模型 ： 物理层、数据链路层、网络层、传输层、表示层、会话层、应用层
  Socket属于传输层，它是对Tcp/ip协议的实现，包含TCP/UDP,它是所有通信协议的基础，Http协议需要Socket支持，以Socket作为基础
